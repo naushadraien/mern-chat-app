@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/form";
 import { AuthSchema } from "@/validationSchema";
 import { Checkbox } from "@/components/ui/checkbox";
+import toast from "react-hot-toast";
+import { authMessage } from "@/constants/toastMessage";
 
 export default function SignUp() {
   const form = useForm<z.infer<typeof AuthSchema.SignUpSchema>>({
@@ -35,15 +37,16 @@ export default function SignUp() {
 
   function onSubmit(data: z.infer<typeof AuthSchema.SignUpSchema>) {
     console.log(data);
+    toast.success(authMessage.Register);
   }
   return (
     <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
-          <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold">Login</h1>
+          <div className="grid gap-2">
+            <h1 className="text-3xl font-bold">Sign Up</h1>
             <p className="text-balance text-muted-foreground">
-              Enter your email below to login to your account
+              Enter your information to create an account
             </p>
           </div>
           <Form {...form}>
@@ -153,10 +156,10 @@ export default function SignUp() {
                     />
                   </div>
                   <Button type="submit" className="w-full">
-                    Login
+                    Create an account
                   </Button>
                   <Button variant="outline" className="w-full">
-                    Login with Google
+                    Sign up with GitHub
                   </Button>
                 </div>
               </form>
@@ -164,9 +167,9 @@ export default function SignUp() {
           </Form>
 
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="#" className="underline">
-              Sign up
+            Already have an account?{" "}
+            <Link href="/login" className="underline">
+              Sign in
             </Link>
           </div>
         </div>

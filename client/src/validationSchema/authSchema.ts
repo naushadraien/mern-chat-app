@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const authSchema = {
   LoginSchema: z.object({
-    username: z
+    userName: z
       .string({
         required_error: "Username is required",
         invalid_type_error: "username must be a string",
@@ -15,8 +15,8 @@ const authSchema = {
         required_error: "Password is required",
         invalid_type_error: "password must be a string",
       })
-      .min(8, {
-        message: "Password must be at least 8 characters.",
+      .min(4, {
+        message: "Password must be at least 4 characters.",
       }),
   }),
 
@@ -29,7 +29,7 @@ const authSchema = {
       .min(2, {
         message: "Fullname must be at least 4 characters.",
       }),
-    username: z
+    userName: z
       .string({
         required_error: "Username is required",
         invalid_type_error: "username must be a string",

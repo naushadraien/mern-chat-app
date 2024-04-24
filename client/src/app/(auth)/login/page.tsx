@@ -7,7 +7,8 @@ import { z } from "zod";
 import Image from "next/image";
 import Link from "next/link";
 
-import { login } from "@/apiHelpers/auth";
+import { useRoot } from "@/Context/RootProvider";
+import authConfig from "@/apiHelpers/auth";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,11 +19,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import chatConstants from "@/constants";
+import requestAPI from "@/utils/requestAPI";
 import { AuthSchema } from "@/validationSchema";
 import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import toast from "react-hot-toast";
+import { LoginType } from "../../../../types/AuthType";
 
 export default function Login() {
+  const { setAuth, updateAuth, setAccessToken } = useRoot();
+
   const form = useForm<z.infer<typeof AuthSchema.LoginSchema>>({
     resolver: zodResolver(AuthSchema.LoginSchema),
     defaultValues: {
@@ -32,23 +39,39 @@ export default function Login() {
   });
 
   const mutation = useMutation({
-    mutationFn: async (values) => {
-      const king = await login(values);
-      // toast.success(king.message);
-      console.log("king", king);
-      return king;
+    mutationFn: async (values: z.infer<typeof AuthSchema.LoginSchema>) => {
+      try {
+        const loginData = await requestAPI(authConfig.login(values));
+
+        if (loginData?.data?._id) {
+          updateAuth(loginData?.data);
+          localStorage.setItem(
+            chatConstants.LOCAL_STORAGE_KEY.accessKey,
+
+            loginData?.token
+          );
+
+          axios.defaults.headers.Authorization = `Bearer ${loginData?.token}`;
+
+          localStorage.setItem(
+            chatConstants.LOCAL_STORAGE_KEY.refreshKey,
+            loginData?.refreshToken
+          );
+
+          setAccessToken(loginData.token);
+          setAuth(loginData?.data);
+          return loginData;
+        }
+      } catch (error: any) {
+        toast.error(error);
+      }
     },
-    onSuccess: (data: any) => toast.success(data.message),
+    onSuccess: (data: LoginType) => toast.success(data.message),
   });
 
   function onSubmit(data: z.infer<typeof AuthSchema.LoginSchema>) {
-    mutation.mutate(data as any);
+    mutation.mutate(data);
   }
-
-  // onSuccess: () => {
-  //   // Invalidate and refetch
-  //   queryClient.invalidateQueries({ queryKey: ["login"] });
-  // },
 
   return (
     <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">

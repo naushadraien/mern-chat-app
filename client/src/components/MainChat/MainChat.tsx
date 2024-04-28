@@ -70,7 +70,7 @@ const MainChat: FC<MainChatProps> = ({ _id, fullName, imageUrl }) => {
 
   return (
     <>
-      <div className="border-gray-500 flex flex-col">
+      <div className="border-gray-500 flex flex-col overflow-auto">
         <div className="bg-purple-500 text-black rounded-tr-md px-4 py-2">
           <p className="text-gray-300">
             To:{" "}
@@ -81,57 +81,35 @@ const MainChat: FC<MainChatProps> = ({ _id, fullName, imageUrl }) => {
         </div>
         {data?.messages?.length > 0 ? (
           data?.messages?.map((message: any) => (
-            <div className="min-h-32 px-4" key={message._id}>
-              <div className="chat chat-start">
+            <div className="min-h-32 px-4 overflow-auto" key={message._id}>
+              <div
+                className={`chat ${
+                  message.senderId === auth?._id ? "chat-end" : "chat-start"
+                }`}
+              >
                 <div className="chat-image avatar">
                   <div className="w-10 rounded-full">
                     <Image
                       alt="Tailwind CSS chat bubble component"
                       src={
-                        auth?.imageUrl ||
-                        "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                        message?.senderId === auth?._id
+                          ? auth?.imageUrl || ""
+                          : imageUrl || ""
                       }
                       width={100}
                       height={100}
                     />
                   </div>
                 </div>
-                <div className="chat-header">
-                  {auth?.fullName || "Obi-Wan Kenobi"}
-                  <time className="text-xs opacity-50">
-                    {moment(message.createdAt).fromNow() || "12:45"}
-                  </time>
+                <div
+                  className={`chat-bubble text-white ${
+                    message.senderId === auth?._id ? "bg-blue-500" : ""
+                  } pb-2`}
+                >
+                  {message.message}
                 </div>
-                <div className="chat-bubble">
-                  {message.message || "You were the Chosen One!"}
-                </div>
-                <div className="chat-footer opacity-50">Delivered</div>
-              </div>
-              <div className="chat chat-end">
-                <div className="chat-image avatar">
-                  <div className="w-10 rounded-full">
-                    <Image
-                      alt="Tailwind CSS chat bubble component"
-                      src={
-                        imageUrl ||
-                        "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
-                      }
-                      width={100}
-                      height={100}
-                    />
-                  </div>
-                </div>
-                <div className="chat-header">
-                  {fullName || "Anakin"}
-                  <time className="text-xs opacity-50">
-                    {moment(message.updatedAt).fromNow() || "12:46"}
-                  </time>
-                </div>
-                <div className="chat-bubble">
-                  {message.message || "I hate you!"}
-                </div>
-                <div className="chat-footer opacity-50">
-                  Seen at {moment(message.updatedAt).fromNow() || "12:46"}
+                <div className="chat-footer opacity-50 text-xs flex gap-1 items-center">
+                  {moment(message.createdAt).fromNow()}
                 </div>
               </div>
             </div>

@@ -3,13 +3,16 @@ import axios from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 import constants from "../constants";
+import toast from "react-hot-toast";
 
 export type AuthType = {
   _id: string;
-  avatar?: string;
+  // avatar?: string;
+  imageUrl: string;
   name: string;
-  firstName: string;
-  lastName: string;
+  // firstName: string;
+  // lastName: string;
+  fullName: string;
   email: string;
   role: string;
 } | null;
@@ -58,7 +61,10 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     initAuth();
   }, []);
 
-  const clearAuth = () => setAuth(null);
+  const clearAuth = () => {
+    setAuth(null);
+    toast.success("Logged out successfully");
+  };
 
   const setAccessToken = (token: string) => {
     axios.defaults.headers.Authorization = `Bearer ${token}`;

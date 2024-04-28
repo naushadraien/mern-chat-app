@@ -3,6 +3,7 @@ import { useRoot } from "@/Context/RootProvider";
 import { checkAuth } from "@/utils/checkAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Chat from "./Chat";
 
 const HomePage = () => {
   const router = useRouter();
@@ -10,7 +11,11 @@ const HomePage = () => {
   useEffect(() => {
     checkAuth(auth?._id || "", router);
   }, [auth?._id, router]);
-  return <div>HomePage</div>;
+  return (
+    <div className="p-20">
+      <Chat />
+    </div>
+  );
 };
 
 export default HomePage;

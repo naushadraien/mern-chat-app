@@ -26,3 +26,14 @@ export type RegisterType = {
     _id: string;
   };
 };
+
+export type UserTypes = {
+  createdAt: string;
+  fullName: string;
+  gender: string;
+  imageUrl: string;
+  password: string;
+  updatedAt: string;
+  userName: string;
+  _id: string;
+}[];

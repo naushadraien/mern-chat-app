@@ -30,11 +30,13 @@ const authConfig = {
     method: "post",
     data,
     url: "/auth/login",
+    withCredentials: true,
   }),
   register: (data: RegisterDataType): ConfigType => ({
     method: "post",
     data,
     url: "/auth/register",
+    withCredentials: true,
   }),
 };
 

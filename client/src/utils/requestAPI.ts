@@ -26,6 +26,7 @@ export type ConfigType = {
   method: MethodType;
   data?: any;
   params?: ParamsType;
+  withCredentials?: boolean;
 };
 
 let isNetworkError = false;

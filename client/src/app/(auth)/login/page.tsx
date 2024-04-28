@@ -26,6 +26,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { LoginType } from "../../../../types/AuthType";
+import { TryCatch } from "@/utils/TryCatch";
 
 export default function Login() {
   const { setAuth, updateAuth, setAccessToken } = useRoot();
@@ -39,8 +40,8 @@ export default function Login() {
   });
 
   const mutation = useMutation({
-    mutationFn: async (values: z.infer<typeof AuthSchema.LoginSchema>) => {
-      try {
+    mutationFn: (values: z.infer<typeof AuthSchema.LoginSchema>) =>
+      TryCatch(async () => {
         const loginData = await requestAPI(authConfig.login(values));
 
         if (loginData?.data?._id) {
@@ -62,11 +63,11 @@ export default function Login() {
           setAuth(loginData?.data);
           return loginData;
         }
-      } catch (error: any) {
-        toast.error(error);
-      }
+      }),
+    onSuccess: (data: LoginType) => {
+      toast.success(data.message);
+      console.log(data);
     },
-    onSuccess: (data: LoginType) => toast.success(data.message),
   });
 
   function onSubmit(data: z.infer<typeof AuthSchema.LoginSchema>) {

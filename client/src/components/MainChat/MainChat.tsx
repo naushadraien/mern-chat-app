@@ -2,12 +2,25 @@ import React, { FC } from "react";
 import { Input } from "../ui/input";
 import { SendHorizontal } from "lucide-react";
 import Image from "next/image";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { TryCatch } from "@/utils/TryCatch";
 import requestAPI from "@/utils/requestAPI";
 import { userMessagesConfig } from "@/apiHelpers/userMessages";
 import { useRoot } from "@/Context/RootProvider";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { MessageSchema } from "@/validationSchema";
+
 import moment from "moment";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Button } from "../ui/button";
 type MainChatProps = {
   fullName?: string;
   imageUrl?: string;
@@ -15,6 +28,15 @@ type MainChatProps = {
 };
 
 const MainChat: FC<MainChatProps> = ({ _id, fullName, imageUrl }) => {
+  const form = useForm<z.infer<typeof MessageSchema.MessageSchema>>({
+    resolver: zodResolver(MessageSchema.MessageSchema),
+    defaultValues: {
+      message: "",
+    },
+  });
+  // Access the client
+  const queryClient = useQueryClient();
+
   const { auth } = useRoot();
   const { data } = useQuery({
     queryKey: ["messages"],
@@ -26,6 +48,25 @@ const MainChat: FC<MainChatProps> = ({ _id, fullName, imageUrl }) => {
         return data.data;
       }),
   });
+
+  const mutation = useMutation({
+    mutationFn: (values: z.infer<typeof MessageSchema.MessageSchema>) =>
+      TryCatch(async () => {
+        const message = await requestAPI(
+          userMessagesConfig.sendMessage(_id || "", values)
+        );
+        return message;
+      }),
+    onSuccess: (data) => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
+      form.reset();
+    },
+  });
+
+  function onSubmit(data: z.infer<typeof MessageSchema.MessageSchema>) {
+    mutation.mutate(data);
+  }
 
   return (
     <>
@@ -101,8 +142,32 @@ const MainChat: FC<MainChatProps> = ({ _id, fullName, imageUrl }) => {
           </div>
         )}
         <div className="relative flex justify-end items-center">
-          <Input placeholder="Send a message" />
-          <SendHorizontal className="absolute right-2 text-gray-500" />
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="w-full space-y-6"
+            >
+              <FormField
+                control={form.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input placeholder="Send a message" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="submit"
+                variant="secondary"
+                className="absolute right-2 text-gray-500 bg-transparent"
+              >
+                <SendHorizontal />
+              </Button>
+            </form>
+          </Form>
         </div>
       </div>
     </>

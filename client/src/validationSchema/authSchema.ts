@@ -42,16 +42,16 @@ const authSchema = {
         required_error: "Password is required",
         invalid_type_error: "password must be a string",
       })
-      .min(8, {
-        message: "Password must be at least 8 characters.",
+      .min(4, {
+        message: "Password must be at least 4 characters.",
       }),
     confirmPassword: z
       .string({
         required_error: "Password is required",
         invalid_type_error: "password must be a string",
       })
-      .min(8, {
-        message: "Password must be at least 8 characters.",
+      .min(4, {
+        message: "Password must be at least 4 characters.",
       }),
     gender: z.enum(["male", "female", ""]),
   }),

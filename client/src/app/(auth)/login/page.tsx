@@ -27,9 +27,17 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { LoginType } from "../../../../types/AuthType";
 import { TryCatch } from "@/utils/TryCatch";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { checkAuth } from "@/utils/checkAuth";
 
 export default function Login() {
-  const { setAuth, updateAuth, setAccessToken } = useRoot();
+  const router = useRouter();
+  const { auth, setAuth, updateAuth, setAccessToken } = useRoot();
+
+  useEffect(() => {
+    checkAuth(auth?._id ?? "", router);
+  }, [auth?._id, router]);
 
   const form = useForm<z.infer<typeof AuthSchema.LoginSchema>>({
     resolver: zodResolver(AuthSchema.LoginSchema),
@@ -66,7 +74,7 @@ export default function Login() {
       }),
     onSuccess: (data: LoginType) => {
       toast.success(data.message);
-      console.log(data);
+      router.push("/");
     },
   });
 
@@ -126,7 +134,11 @@ export default function Login() {
                       )}
                     />
                   </div>
-                  <Button type="submit" className="w-full">
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={mutation.isPending}
+                  >
                     Login
                   </Button>
                   <Button variant="outline" className="w-full">

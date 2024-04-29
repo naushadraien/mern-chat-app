@@ -24,6 +24,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.51.3",
     "react-hot-toast": "^2.4.1",
+    "socket.io-client": "^4.7.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.5"
@@ -32,6 +33,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/socket.io-client": "^3.0.0",
     "daisyui": "^4.10.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.2",

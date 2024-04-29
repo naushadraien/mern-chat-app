@@ -6,9 +6,9 @@ import connectDB from "./utils/feature.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { app, server } from "./socket/socket.js";
 const port = chatConfig.PORT;
 connectDB(chatConfig.Mongo_URI);
-const app = express();
 app.get("/", (req, res) => {
     res.send("Api is working on /api/v1");
 });
@@ -21,6 +21,6 @@ app.use(cors({
 app.use(cookieParser());
 mainRouter(app);
 app.use(errorMiddleware);
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server is working on http://localhost:${port}`);
 });

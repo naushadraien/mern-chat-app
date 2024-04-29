@@ -8,14 +8,16 @@ import { UserTypes } from "../../types/AuthType";
 import { Input } from "./ui/input";
 import { LogOut, Search } from "lucide-react";
 import { Separator } from "./ui/separator";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRoot } from "@/Context/RootProvider";
 import { Button } from "./ui/button";
 import NoChat from "./NoChat";
+import { useSocket } from "@/Context/SocketContext";
 
 const Chat = () => {
   const [selectedUserId, setSelectedUserId] = useState("");
-  const { clearAuth } = useRoot();
+  const { auth, clearAuth } = useRoot();
+
   const { data } = useQuery({
     queryKey: ["users"],
     queryFn: () =>
@@ -40,17 +42,18 @@ const Chat = () => {
           <Search className="absolute top-2 left-2 text-gray-500" />
           <Separator />
         </div>
-        {data?.map((user) => (
-          <Users
-            name={user.fullName}
-            imgUrl={user.imageUrl}
-            status={true}
-            userId={user._id}
-            isSelected={selectedUserId === user._id}
-            onClick={() => handleClick(user._id)}
-            key={user._id}
-          />
-        ))}
+        {data?.map((user) => {
+          return (
+            <Users
+              name={user.fullName}
+              imgUrl={user.imageUrl}
+              userId={user._id}
+              isSelected={selectedUserId === user._id}
+              onClick={() => handleClick(user._id)}
+              key={user._id}
+            />
+          );
+        })}
         <Button onClick={() => clearAuth()} variant="outline" className="w-16">
           <LogOut className="rotate-180" />
         </Button>

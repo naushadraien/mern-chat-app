@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import RootProvider from "@/Context/RootProvider";
 import QueryProvider from "@/Providers/queryProvider";
+import { SocketProvider } from "@/Context/SocketContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +23,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <Toaster position="top-center" />
         <RootProvider>
-          <QueryProvider>{children}</QueryProvider>
+          <SocketProvider>
+            <QueryProvider>{children}</QueryProvider>
+          </SocketProvider>
         </RootProvider>
       </body>
     </html>

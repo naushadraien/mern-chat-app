@@ -43,6 +43,10 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
       socket.close();
       setSocket(null);
     }
+
+    return () => {
+      socket?.close();
+    };
   }, [auth]);
 
   return (

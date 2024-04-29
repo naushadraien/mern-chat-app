@@ -79,7 +79,18 @@ const MainChat: FC<MainChatProps> = ({ _id, fullName, imageUrl }) => {
       setMessages([...messages, newMessage]);
     });
 
-    return () => socket?.off("newMessage");
+    return () => {
+      if (!socket) {
+        return undefined;
+      }
+      socket?.off("newMessage");
+    };
+
+    // return () => {
+    //   if (socket) {
+    //     void socket.off("newMessage"); // Ignore the return value
+    //   }
+    // };
   }, [socket, setMessages, messages]);
 
   const lastMessageRef = useRef<HTMLDivElement>(null);

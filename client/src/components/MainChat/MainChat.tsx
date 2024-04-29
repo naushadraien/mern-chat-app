@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 import { SendHorizontal } from "lucide-react";
 import Image from "next/image";
@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "../ui/button";
+import { useSocket } from "@/Context/SocketContext";
 type MainChatProps = {
   fullName?: string;
   imageUrl?: string;
@@ -36,8 +37,9 @@ const MainChat: FC<MainChatProps> = ({ _id, fullName, imageUrl }) => {
   });
   // Access the client
   const queryClient = useQueryClient();
-
+  const { socket } = useSocket();
   const { auth } = useRoot();
+  const [messages, setMessages] = useState<string[]>([]);
   const { data } = useQuery({
     queryKey: ["messages"],
     queryFn: () =>
@@ -45,6 +47,7 @@ const MainChat: FC<MainChatProps> = ({ _id, fullName, imageUrl }) => {
         const data = await requestAPI(
           userMessagesConfig.userMessage(_id || "")
         );
+        setMessages(data.data.messages);
         return data.data;
       }),
   });
@@ -68,6 +71,23 @@ const MainChat: FC<MainChatProps> = ({ _id, fullName, imageUrl }) => {
     mutation.mutate(data);
   }
 
+  useEffect(() => {
+    socket?.on("newMessages", (newMessage) => {
+      // newMessage.shouldShake = true;
+      // const sound = new Audio(notificationSound);
+      // sound.play();
+      setMessages([...messages, newMessage]);
+    });
+
+    return () => socket?.off("newMessage");
+  }, [socket, setMessages, messages]);
+
+  const lastMessageRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    setTimeout(() => {
+      lastMessageRef?.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  }, [messages]);
   return (
     <>
       <div className="border-gray-500 flex flex-col overflow-auto">
@@ -79,9 +99,13 @@ const MainChat: FC<MainChatProps> = ({ _id, fullName, imageUrl }) => {
             </span>
           </p>
         </div>
-        {data?.messages?.length > 0 ? (
-          data?.messages?.map((message: any) => (
-            <div className="min-h-32 px-4 overflow-auto" key={message._id}>
+        {messages?.length > 0 ? (
+          messages?.map((message: any) => (
+            <div
+              className="min-h-32 px-4 overflow-auto"
+              key={message._id}
+              ref={lastMessageRef}
+            >
               <div
                 className={`chat ${
                   message.senderId === auth?._id ? "chat-end" : "chat-start"

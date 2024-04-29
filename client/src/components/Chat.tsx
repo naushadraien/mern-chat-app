@@ -1,22 +1,21 @@
-import { useQuery } from "@tanstack/react-query";
-import MainChat from "./MainChat/MainChat";
-import Users from "./Users/Users";
+import { useRoot } from "@/Context/RootProvider";
+import { usersConfig } from "@/apiHelpers/users";
 import { TryCatch } from "@/utils/TryCatch";
 import requestAPI from "@/utils/requestAPI";
-import { usersConfig } from "@/apiHelpers/users";
-import { UserTypes } from "../../types/AuthType";
-import { Input } from "./ui/input";
+import { useQuery } from "@tanstack/react-query";
 import { LogOut, Search } from "lucide-react";
-import { Separator } from "./ui/separator";
-import { useEffect, useState } from "react";
-import { useRoot } from "@/Context/RootProvider";
-import { Button } from "./ui/button";
+import { useState } from "react";
+import { UserTypes } from "../../types/AuthType";
+import MainChat from "./MainChat/MainChat";
 import NoChat from "./NoChat";
-import { useSocket } from "@/Context/SocketContext";
+import Users from "./Users/Users";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Separator } from "./ui/separator";
 
 const Chat = () => {
   const [selectedUserId, setSelectedUserId] = useState("");
-  const { auth, clearAuth } = useRoot();
+  const { clearAuth } = useRoot();
 
   const { data } = useQuery({
     queryKey: ["users"],

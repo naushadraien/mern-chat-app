@@ -1,6 +1,7 @@
 import { TryCatch } from "../middlewares/errorMiddleware.js";
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Messages.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 import { errorMessage, successData } from "../utils/utitlity-func.js";
 export const sendMessage = TryCatch(async (req, res, next) => {
     const senderId = req.user?.id;
@@ -31,6 +32,10 @@ export const sendMessage = TryCatch(async (req, res, next) => {
         conversation.messages.push(newMessage._id);
     }
     await Promise.all([conversation.save(), newMessage.save()]);
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newMessages", newMessage);
+    }
     return successData(res, "Message created successfully", newMessage, true);
 });
 export const getMessagesBetweenUser = TryCatch(async (req, res, next) => {
